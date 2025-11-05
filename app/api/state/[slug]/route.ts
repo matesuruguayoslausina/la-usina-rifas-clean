@@ -1,6 +1,8 @@
-import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
-import { redis, holdKey } from '@/lib/redis'
+- import { prisma } from '@/lib/db'
+- import { redis, holdKey } from '@/lib/redis'
++ import { prisma } from '../../../../lib/db'
++ import { redis, holdKey } from '../../../../lib/redis'
+
 
 export async function GET(_: Request, { params }: { params: { slug: string } }){
   const raffle = await prisma.raffle.findUnique({ where: { slug: params.slug }, include: { tickets: { select: { number:true, status:true } } } })
