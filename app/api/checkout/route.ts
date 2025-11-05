@@ -1,7 +1,10 @@
-import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
-import { mp } from '@/lib/mp'
-import { redis, holdKey } from '@/lib/redis'
+- import { prisma } from '@/lib/db'
+- import { mp } from '@/lib/mp'
+- import { redis, holdKey } from '@/lib/redis'
++ import { prisma } from '../../../lib/db'
++ import { mp } from '../../../lib/mp'
++ import { redis, holdKey } from '../../../lib/redis'
+
 
 export async function POST(req: Request){
   const { raffleId, email, numbers } = await req.json()
