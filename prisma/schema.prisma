@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RaffleStatus { DRAFT ACTIVE SOLD_OUT FINISHED }
+enum TicketStatus { AVAILABLE RESERVED SOLD }
+enum OrderStatus { PENDING APPROVED CANCELED EXPIRED }
+
+model Raffle {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  description  String?
+  coverUrl     String?
+  priceCents   Int
+  totalNumbers Int
+  status       RaffleStatus @default(DRAFT)
+  drawAt       DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  tickets      Ticket[]
+  orders       Order[]
+}
+
+model Ticket {
+  id         String   @id @default(cuid())
+  raffleId   String
+  number     Int
+  status     TicketStatus @default(AVAILABLE)
+  orderId    String?
+  buyerEmail String?
+  buyerName  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  raffle     Raffle   @relation(fields: [raffleId], references: [id])
+  @@unique([raffleId, number])
+}
+
+model Order {
+  id            String   @id @default(cuid())
+  raffleId      String
+  buyerEmail    String
+  buyerName     String?
+  amountCents   Int
+  mpPreference  String?
+  mpPaymentId   String? @unique
+  status        OrderStatus @default(PENDING)
+  numbers       Int[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  raffle        Raffle   @relation(fields: [raffleId], references: [id])
+}
