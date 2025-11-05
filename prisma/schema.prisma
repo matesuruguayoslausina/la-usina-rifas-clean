@@ -39,6 +39,7 @@ model Ticket {
   updatedAt  DateTime @updatedAt
 
   raffle     Raffle   @relation(fields: [raffleId], references: [id])
+
   @@unique([raffleId, number])
 }
 
