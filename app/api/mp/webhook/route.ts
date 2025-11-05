@@ -1,6 +1,8 @@
-import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
-import { sendConfirmationEmail } from '@/lib/email'
+- import { prisma } from '@/lib/db'
+- import { sendConfirmationEmail } from '@/lib/email'
++ import { prisma } from '../../../../lib/db'
++ import { sendConfirmationEmail } from '../../../../lib/email'
+
 
 export async function POST(req: Request){
   const body = await req.json().catch(()=>null)
