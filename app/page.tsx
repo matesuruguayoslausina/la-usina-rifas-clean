@@ -1,6 +1,5 @@
-- import { prisma } from '@/lib/db'
-+ import { prisma } from '../lib/db'
-
+import Link from 'next/link'
+import { prisma } from '../lib/db'
 
 export default async function Home(){
   const raffles = await prisma.raffle.findMany({ orderBy: { createdAt: 'desc' } })
