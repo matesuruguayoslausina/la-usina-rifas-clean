@@ -1,6 +1,6 @@
-- import { prisma } from '@/lib/db'
-+ import { prisma } from '../../../lib/db'
-
+import { prisma } from '../../../lib/db'
+import Link from 'next/link'
+import RifaClient from './rifa-client'
 
 export default async function Rifa({ params }: { params: { slug: string } }){
   const raffle = await prisma.raffle.findUnique({ where: { slug: params.slug }})
