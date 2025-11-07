@@ -1,5 +1,5 @@
-- import { redis, holdKey } from '@/lib/redis'
-+ import { redis, holdKey } from '../../../lib/redis'
+import { NextResponse } from 'next/server'
+import { redis, holdKey } from '../../../lib/redis'
 
 export async function POST(req: Request){
   const { raffleId, numbers } = await req.json()
