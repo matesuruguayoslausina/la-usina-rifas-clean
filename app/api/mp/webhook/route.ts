@@ -1,8 +1,6 @@
-- import { prisma } from '@/lib/db'
-- import { sendConfirmationEmail } from '@/lib/email'
-+ import { prisma } from '../../../../lib/db'
-+ import { sendConfirmationEmail } from '../../../../lib/email'
-
+import { NextResponse } from 'next/server'
+import { prisma } from '../../../../lib/db'
+import { sendConfirmationEmail } from '../../../../lib/email'
 
 export async function POST(req: Request){
   const body = await req.json().catch(()=>null)
@@ -12,7 +10,11 @@ export async function POST(req: Request){
 
   try{
     const mpPaymentId = String(dataId || 'unknown')
-    const orders = await prisma.order.findMany({ where: { status: 'PENDING' }, orderBy: { createdAt: 'desc' }, take: 50 })
+    const orders = await prisma.order.findMany({
+      where: { status: 'PENDING' },
+      orderBy: { createdAt: 'desc' },
+      take: 50
+    })
     const order = orders[0]
     if(!order) return NextResponse.json({ ok:true })
     if(order.mpPaymentId) return NextResponse.json({ ok:true })
@@ -27,7 +29,9 @@ export async function POST(req: Request){
 
     const raffle = await prisma.raffle.findUnique({ where: { id: order.raffleId } })
     if(raffle){
-      await sendConfirmationEmail(order.buyerEmail, { title: raffle.title, numbers: order.numbers, amount: order.amountCents, orderId: order.id })
+      await sendConfirmationEmail(order.buyerEmail, {
+        title: raffle.title, numbers: order.numbers, amount: order.amountCents, orderId: order.id
+      })
     }
 
     return NextResponse.json({ ok:true })
