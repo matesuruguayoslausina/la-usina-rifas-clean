@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '../../../lib/db'
-import { mp } from '../../../lib/mp'
+import { preferenceClient } from '../../../lib/mp'
 import { redis, holdKey } from '../../../lib/redis'
 
 export async function POST(req: Request){
@@ -11,6 +11,7 @@ export async function POST(req: Request){
   const raffle = await prisma.raffle.findUnique({ where: { id: raffleId } })
   if(!raffle) return NextResponse.json({ error:'Rifa no encontrada' }, { status: 404 })
 
+  // Verificar que los números sigan reservados
   for(const n of numbers){
     const v = await redis.get(holdKey(raffleId, n))
     if(!v) return NextResponse.json({ error:`El número ${n} ya no está reservado.` }, { status: 409 })
@@ -22,7 +23,9 @@ export async function POST(req: Request){
   })
 
   const base = process.env.NEXT_PUBLIC_BASE_URL || ''
-  const preference = await (await mp).preferences.create({
+
+  // Crear preferencia con el SDK nuevo
+  const prefRes = await preferenceClient.create({
     body: {
       items: [{
         id: order.id,
@@ -42,6 +45,16 @@ export async function POST(req: Request){
     }
   })
 
-  await prisma.order.update({ where: { id: order.id }, data: { mpPreference: preference.id } })
-  return NextResponse.json({ init_point: preference.init_point })
+  // Guardar id de preferencia (por las dudas)
+  if (prefRes?.id) {
+    await prisma.order.update({ where: { id: order.id }, data: { mpPreference: String(prefRes.id) } })
+  }
+
+  // Redirigir al init_point o fallback
+  const initPoint = (prefRes as any)?.init_point || (prefRes as any)?.sandbox_init_point
+  if(!initPoint) {
+    return NextResponse.json({ error: 'No se pudo iniciar el pago' }, { status: 500 })
+  }
+
+  return NextResponse.json({ init_point: initPoint })
 }
