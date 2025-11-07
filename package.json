@@ -1,10 +1,10 @@
 {
   "name": "la-usina-rifas",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma migrate deploy && next build",
+    "build": "prisma db push && next build",
     "start": "next start",
     "postinstall": "prisma generate"
   },
